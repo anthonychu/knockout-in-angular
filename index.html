@@ -1,0 +1,78 @@
+<html>
+<head>
+    <title></title>
+    <link href="styles.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Knockout View Model in Angular</h2>
+
+    <p>Angular app using Knockout view model (see <a href="index-knockout.html">original Knockout page</a>)</p>
+
+    <div ng-app="cart" ng-controller="CartController as vm" class='liveExample'>
+        <table width='100%'>
+            <thead>
+                <tr>
+                    <th width='25%'>Category</th>
+                    <th width='25%'>Product</th>
+                    <th class='price' width='15%'>Price</th>
+                    <th class='quantity' width='10%'>Quantity</th>
+                    <th class='price' width='15%'>Subtotal</th>
+                    <th width='10%'></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="line in vm.cart.lines()">
+                    <td>
+                        <select ng-options="category.name for category in vm.sampleProductCategories" 
+                                ng-model="line.category" ng-model-options="{ getterSetter: true }">
+                            <option value="">Select...</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select ng-options="product.name for product in line.category().products" 
+                                ng-model="line.product" ng-model-options="{ getterSetter: true }"
+                                ng-show="line.category()">
+                            <option value="">Select...</option>
+                        </select>
+                    </td>
+                    <td class='price'>
+                        <span ng-bind='line.product().price | currency'></span>
+                    </td>
+                    <td class='quantity'>
+                        <input ng-show="line.product()" ng-model="line.quantity" ng-model-options="{ getterSetter: true }" />
+                    </td>
+                    <td class='price'>
+                        <span ng-show="line.product()" ng-bind="line.subtotal() | currency"></span>
+                    </td>
+                    <td>
+                        <a href='#' ng-click="vm.cart.removeLine(line)">Remove</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class='grandTotal'>
+            Total value: <span ng-bind="vm.cart.grandTotal() | currency"></span>
+        </p>
+        <button ng-click="vm.cart.addLine()">Add product</button>
+        <button ng-click="vm.cart.save()">Submit order</button>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+    <script src="sampleProductCategories.js"></script>
+    <script src="knockout-viewmodels.js"></script>
+
+    <script>
+        (function () {
+            angular.module('cart', [])
+              .controller('CartController', CartController);
+
+            function CartController() {
+                this.cart = new Cart();
+                this.sampleProductCategories = sampleProductCategories;
+            }
+        }());
+    </script>
+</body>
+</html>
